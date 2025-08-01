@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Penggajian Advanced - PT Sukses Batindo & PT Pandawa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'batindo': '#1e40af',
+                        'pandawa': '#059669',
+                        'primary': '#3b82f6',
+                        'secondary': '#10b981'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'bounce-in': 'bounceIn 0.6s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        bounceIn: {
+                            '0%': { transform: 'scale(0.3)', opacity: '0' },
+                            '50%': { transform: 'scale(1.05)' },
+                            '70%': { transform: 'scale(0.9)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .floating-label {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus + .floating-label,
+        .input-focus:not(:placeholder-shown) + .floating-label {
+            transform: translateY(-1.5rem) scale(0.8);
+            color: #3b82f6;
+        }
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+        }
+        .content-gradient {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4 content-gradient relative overflow-hidden" style="display: flex;">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-green-400 to-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+        </div>
+        
+        <div class="max-w-md w-full relative z-10 animate-bounce-in">
+            <!-- Login Card -->
+            <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20 backdrop-blur-lg">
+                <!-- Logo & Title -->
+                <div class="text-center mb-8">
+                    <div class="relative">
+                        <div class="bg-gradient-to-br from-blue-600 via-purple-600 to-green-600 p-4 rounded-2xl mx-auto w-20 h-20 flex items-center justify-center mb-6 shadow-lg animate-pulse">
+                            <i class="fas fa-building text-white text-3xl"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full animate-ping"></div>
+                    </div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2 animate-fade-in">
+                        Sistem Penggajian Advanced
+                    </h1>
+                    <p class="text-gray-600 text-sm font-medium">PT SUKSES BATINDO & PT PANDAWA</p>
+                    <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-green-500 mx-auto mt-3 rounded-full"></div>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="space-y-6 animate-slide-up">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-blue-500"></i>
+                        </div>
+                        <select id="userRole" class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md">
+                            <option value="">Pilih Role Akses...</option>
+                            <option value="admin">👨‍💼 Administrator</option>
+                            <option value="director">👔 Direktur</option>
+                        </select>
+                    </div>
+
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-blue-500"></i>
+                        </div>
+                        <input type="password" id="userPassword" class="w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md" placeholder="Masukkan password">
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition-colors duration-200">
+                            <i id="passwordIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <button type="submit" class="w-full btn-primary text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Masuk Sistem
+                        <div class="absolute inset-0 bg-white/20 rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                </form>
+
+
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-6 text-gray-500 text-sm">
+                <p>&copy; 2024 Sistem Penggajian Advanced</p>
+                <p>Developed with ❤️ for PT SUKSES BATINDO & PT PANDAWA</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="min-h-screen content-gradient" style="display: none;">
+        <div class="container mx-auto px-4 py-6">
+            <!-- Header -->
+            <div class="glass-effect rounded-2xl shadow-xl p-4 mb-6 border border-white/20">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center">
+                        <div class="relative mr-3">
+                            <div class="bg-gradient-to-br from-blue-600 via-purple-600 to-green-600 p-3 rounded-xl shadow-lg">
+                                <i class="fas fa-building text-white text-xl"></i>
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold gradient-text">
+                                Sistem Penggajian Advanced
+                            </h1>
+                            <p class="text-gray-600 text-xs font-medium">PT SUKSES BATINDO RESOURCES & PT PANDAWA JAYA BERSATU</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-2 rounded-lg text-white shadow-md">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-calendar-alt text-sm"></i>
+                                <p class="text-xs font-medium" id="currentDate"></p>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 px-3 py-2 rounded-lg text-white shadow-md">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-users text-sm"></i>
+                                <p class="text-xs font-medium">
+                                    <span id="totalEmployees">0</span> Karyawan
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- User Info & Logout -->
+                        <div class="flex items-center space-x-2">
+                            <div class="glass-effect px-3 py-2 rounded-lg border border-white/20 shadow-md">
+                                <div class="flex items-center space-x-2">
+                                    <div id="userAvatar" class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center shadow-sm">
+                                        <i class="fas fa-user text-white text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Logged in as</p>
+                                        <p class="text-xs font-bold text-gray-800" id="currentUserRole"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="logout()" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-lg transition-all duration-300 shadow-md transform hover:scale-105">
+                                <i class="fas fa-sign-out-alt mr-1"></i>
+                                <span class="hidden sm:inline text-xs font-medium">Logout</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="glass-effect rounded-3xl shadow-2xl mb-8 border border-white/20 overflow-hidden">
+                <div class="flex flex-wrap">
+                    <button onclick="showTab('dashboard')" id="dashboardTab" class="tab-button flex-1 min-w-0 py-4 px-4 text-center font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg transition-all duration-300">
+                        <div class="flex flex-col items-center space-y-1">
+                            <i class="fas fa-chart-dashboard text-lg"></i>
+                            <span class="text-xs">Dashboard</span>
+                        </div>
+                    </button>
+                    <button onclick="showTab('employee')" id="employeeTab" class="tab-button flex-1 min-w-0 py-4 px-4 text-center font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300">
+                        <div class="flex flex-col items-center space-y-1">
+                            <i class="fas fa-user-plus text-lg"></i>
+                            <span class="text-xs">Karyawan</span>
+                        </div>
+                    </button>
+                    <button onclick="showTab('debt')" id="debtTab" class="tab-button flex-1 min-w-0 py-4 px-4 text-center font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300">
+                        <div class="flex flex-col items-center space-y-1">
+                            <i class="fas fa-credit-card text-lg"></i>
+                            <span class="text-xs">Hutang</span>
+                        </div>
+                    </button>
+                    <button onclick="showTab('salary')" id="salaryTab" class="tab-button flex-1 min-w-0 py-4 px-4 text-center font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all duration-300">
+                        <div class="flex flex-col items-center space-y-1">
+                            <i class="fas fa-calculator text-lg"></i>
+                            <span class="text-xs">Gaji</span>
+                        </div>
+                    </button>
+                    <button onclick="showTab('payslip')" id="payslipTab" class="tab-button flex-1 min-w-0 py-4 px-4 text-center font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 transition-all duration-300">
+                        <div class="flex flex-col items-center space-y-1">
+                            <i class="fas fa-file-pdf text-lg"></i>
+                            <span class="text-xs">Slip Gaji</span>
+                        </div>
+                    </button>
+                    <button onclick="showTab('history')" id="historyTab" class="tab-button flex-1 min-w-0 py-4 px-4 text-center font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-300">
+                        <div class="flex flex-col items-center space-y-1">
+                            <i class="fas fa-history text-lg"></i>
+                            <span class="text-xs">Riwayat</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboardContent" class="tab-content animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Stats Cards -->
+                    <div class="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-3xl p-6 text-white shadow-2xl card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-users text-2xl"></i>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-blue-100 text-sm font-medium">Total Karyawan</p>
+                                    <p class="text-3xl font-bold" id="dashTotalEmployees">0</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-2">
+                                <div class="bg-white h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-green-500 via-green-600 to-green-700 rounded-3xl p-6 text-white shadow-2xl card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-money-bill-wave text-2xl"></i>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-green-100 text-sm font-medium">Gaji Bulan Ini</p>
+                                    <p class="text-2xl font-bold" id="dashTotalSalary">Rp 0</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-2">
+                                <div class="bg-white h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 rounded-3xl p-6 text-white shadow-2xl card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-credit-card text-2xl"></i>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-purple-100 text-sm font-medium">Total Hutang</p>
+                                    <p class="text-2xl font-bold" id="dashTotalDebt">Rp 0</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-2">
+                                <div class="bg-white h-2 rounded-full" style="width: 40%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 rounded-3xl p-6 text-white shadow-2xl card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-file-pdf text-2xl"></i>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-orange-100 text-sm font-medium">Slip Dibuat</p>
+                                    <p class="text-3xl font-bold" id="dashTotalSlips">0</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-2">
+                                <div class="bg-white h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20 card-hover">
+                        <div class="flex items-center mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mr-4">
+                                <i class="fas fa-chart-pie text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-bold gradient-text">Distribusi Karyawan per Perusahaan</h3>
+                        </div>
+                        <div class="relative">
+                            <canvas id="companyChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20 card-hover">
+                        <div class="flex items-center mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mr-4">
+                                <i class="fas fa-chart-line text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-bold gradient-text">Trend Penggajian Bulanan</h3>
+                        </div>
+                        <div class="relative">
+                            <canvas id="salaryChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Data Tab -->
+            <div id="employeeContent" class="tab-content hidden animate-fade-in">
+                <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+                        <i class="fas fa-user-circle text-blue-600 mr-3"></i>
+                        Data Karyawan
+                    </h2>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="importExcel()" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg transform hover:scale-105">
+                            <i class="fas fa-file-excel mr-2"></i>Import Excel
+                        </button>
+                        <button onclick="exportEmployees()" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg transform hover:scale-105">
+                            <i class="fas fa-download mr-2"></i>Export Data
+                        </button>
+                    </div>
+                </div>
+                
+                <form id="employeeForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-user text-blue-500 mr-2"></i>
+                            Nama Lengkap *
+                        </label>
+                        <input type="text" id="fullName" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-briefcase text-green-500 mr-2"></i>
+                            Jabatan *
+                        </label>
+                        <input type="text" id="position" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="Masukkan jabatan" required>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-id-card text-purple-500 mr-2"></i>
+                            NIK *
+                        </label>
+                        <input type="text" id="nik" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="Masukkan NIK" required>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-file-invoice text-orange-500 mr-2"></i>
+                            NPWP
+                        </label>
+                        <input type="text" id="npwp" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="Masukkan NPWP (opsional)">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-users text-pink-500 mr-2"></i>
+                            Status PTKP *
+                        </label>
+                        <select id="ptkpStatus" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" required>
+                            <option value="TK/0">TK/0 - Tidak Kawin</option>
+                            <option value="K/0">K/0 - Kawin tanpa tanggungan</option>
+                            <option value="K/1">K/1 - Kawin 1 tanggungan</option>
+                            <option value="K/2">K/2 - Kawin 2 tanggungan</option>
+                            <option value="K/3">K/3 - Kawin 3 tanggungan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-university text-indigo-500 mr-2"></i>
+                            Jenis Bank *
+                        </label>
+                        <select id="bankName" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" required>
+                            <option value="Mandiri">Bank Mandiri</option>
+                            <option value="BCA">Bank BCA</option>
+                            <option value="BRI">Bank BRI</option>
+                            <option value="BNI">Bank BNI</option>
+                            <option value="CIMB">Bank CIMB Niaga</option>
+                            <option value="Danamon">Bank Danamon</option>
+                            <option value="Permata">Bank Permata</option>
+                            <option value="BTN">Bank BTN</option>
+                            <option value="Mega">Bank Mega</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-credit-card text-teal-500 mr-2"></i>
+                            No Rekening Bank *
+                        </label>
+                        <input type="text" id="accountNumber" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="Masukkan nomor rekening" required>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-building text-red-500 mr-2"></i>
+                            Perusahaan *
+                        </label>
+                        <select id="company" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" required>
+                            <option value="PT SUKSES BATINDO RESOURCES">PT SUKSES BATINDO RESOURCES</option>
+                            <option value="PT PANDAWA JAYA BERSATU">PT PANDAWA JAYA BERSATU</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-envelope text-cyan-500 mr-2"></i>
+                            Email (Opsional)
+                        </label>
+                        <input type="email" id="email" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="email@example.com">
+                    </div>
+                </form>
+                
+                <div class="mt-8 flex flex-col sm:flex-row gap-4" id="employeeFormButtons">
+                    <button onclick="saveEmployee()" class="admin-only btn-primary text-white font-bold py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        <i class="fas fa-save mr-2"></i>Simpan Data Karyawan
+                    </button>
+                    <button onclick="clearEmployeeForm()" class="admin-only bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                        <i class="fas fa-eraser mr-2"></i>Bersihkan Form
+                    </button>
+                </div>
+
+                <!-- Employee List -->
+                <div class="mt-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mr-4">
+                            <i class="fas fa-list text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold gradient-text">Daftar Karyawan</h3>
+                    </div>
+                    <div class="overflow-x-auto glass-effect rounded-2xl shadow-xl border border-white/20">
+                        <table class="w-full">
+                            <thead class="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-user mr-2"></i>Nama
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-briefcase mr-2"></i>Jabatan
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-building mr-2"></i>Perusahaan
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-university mr-2"></i>Bank
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-cogs mr-2"></i>Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeeList" class="bg-white/90 backdrop-blur-sm divide-y divide-gray-200">
+                                <!-- Employee rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Debt Management Tab -->
+            <div id="debtContent" class="tab-content hidden animate-fade-in">
+                <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-credit-card text-red-600 mr-3"></i>
+                    Kelola Hutang Karyawan
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-user-check text-blue-500 mr-2"></i>
+                            Pilih Karyawan
+                        </label>
+                        <select id="debtEmployee" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                            <option value="">Pilih karyawan...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-tag text-green-500 mr-2"></i>
+                            Nama Hutang
+                        </label>
+                        <input type="text" id="debtName" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="Contoh: Kasbon, Koperasi, Motor">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-money-bill-wave text-purple-500 mr-2"></i>
+                            Nominal per Bulan (Rp)
+                        </label>
+                        <input type="number" id="debtAmount" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="0">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-toggle-on text-orange-500 mr-2"></i>
+                            Status
+                        </label>
+                        <select id="debtStatus" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                            <option value="aktif">Aktif</option>
+                            <option value="lunas">Lunas</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-8 admin-only">
+                    <button onclick="saveDebt()" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">
+                        <i class="fas fa-plus mr-2"></i>Tambah Hutang
+                    </button>
+                </div>
+
+                <!-- Debt List -->
+                <div class="mt-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4">
+                            <i class="fas fa-list-alt text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold gradient-text">Daftar Hutang Aktif</h3>
+                    </div>
+                    <div class="overflow-x-auto glass-effect rounded-2xl shadow-xl border border-white/20">
+                        <table class="w-full">
+                            <thead class="bg-gradient-to-r from-red-500 to-pink-600 text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-user mr-2"></i>Karyawan
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-tag mr-2"></i>Nama Hutang
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-money-bill-wave mr-2"></i>Nominal/Bulan
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-toggle-on mr-2"></i>Status
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                        <i class="fas fa-cogs mr-2"></i>Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="debtList" class="bg-white/90 backdrop-blur-sm divide-y divide-gray-200">
+                                <!-- Debt rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Salary Calculation Tab -->
+            <div id="salaryContent" class="tab-content hidden animate-fade-in">
+                <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-calculator text-green-600 mr-3"></i>
+                    Hitung Gaji Bulanan
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-user-check text-blue-500 mr-2"></i>
+                            Pilih Karyawan
+                        </label>
+                        <select id="salaryEmployee" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" onchange="loadEmployeeDebts()">
+                            <option value="">Pilih karyawan...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-calendar-alt text-green-500 mr-2"></i>
+                            Bulan & Tahun Penggajian
+                        </label>
+                        <input type="month" id="salaryMonth" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" onchange="calculateSalary()">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-money-bill-wave text-purple-500 mr-2"></i>
+                            Gaji Pokok (Rp)
+                        </label>
+                        <input type="number" id="basicSalary" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="0" oninput="calculateSalary()">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-hand-holding-usd text-orange-500 mr-2"></i>
+                            Tunjangan Tetap (Rp)
+                        </label>
+                        <input type="number" id="allowance" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="0" oninput="calculateSalary()">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-gift text-pink-500 mr-2"></i>
+                            Bonus/Lembur (Rp)
+                        </label>
+                        <input type="number" id="bonus" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="0" oninput="calculateSalary()">
+                    </div>
+                </div>
+
+                <!-- Special Notice for July 2025 -->
+                <div id="julyNotice" class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4 hidden">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold text-yellow-800">Pemberitahuan Khusus</h4>
+                            <p class="text-yellow-700 text-sm">Untuk bulan Juli 2025, tidak ada potongan BPJS sesuai kebijakan perusahaan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Debts -->
+                <div id="employeeDebtsSection" class="mt-6 hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Hutang Aktif Karyawan</h3>
+                    <div id="employeeDebtsList" class="bg-gray-50 rounded-lg p-4">
+                        <!-- Employee debts will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Calculation Results -->
+                <div class="mt-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Perhitungan Otomatis</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                <i class="fas fa-shield-alt text-blue-600 mr-2"></i>
+                                Potongan BPJS
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-1">JHT (2%): <span id="jhtAmount" class="font-bold text-blue-600">Rp 0</span></p>
+                            <p class="text-sm text-gray-600 mb-2">Kesehatan (1%): <span id="healthAmount" class="font-bold text-blue-600">Rp 0</span></p>
+                            <p class="text-lg text-blue-700 font-bold border-t pt-2">Total: <span id="totalBpjs">Rp 0</span></p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                <i class="fas fa-percentage text-red-600 mr-2"></i>
+                                PPh 21
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-1">Neto Tahunan: <span id="yearlyNet" class="font-bold">Rp 0</span></p>
+                            <p class="text-sm text-gray-600 mb-2">PKP: <span id="pkp" class="font-bold">Rp 0</span></p>
+                            <p class="text-lg text-red-700 font-bold border-t pt-2">PPh 21: <span id="pph21">Rp 0</span></p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                <i class="fas fa-credit-card text-purple-600 mr-2"></i>
+                                Potongan Hutang
+                            </h4>
+                            <div id="debtBreakdown" class="text-sm text-gray-600 mb-2">
+                                <p>Tidak ada hutang aktif</p>
+                            </div>
+                            <p class="text-lg text-purple-700 font-bold border-t pt-2">Total: <span id="totalDebt">Rp 0</span></p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                <i class="fas fa-money-bill-wave text-green-600 mr-2"></i>
+                                Take Home Pay
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-1">Gaji Bruto: <span id="grossSalary" class="font-bold">Rp 0</span></p>
+                            <p class="text-sm text-gray-600 mb-2">Total Potongan: <span id="totalDeduction" class="font-bold">Rp 0</span></p>
+                            <p class="text-2xl text-green-700 font-bold border-t pt-2">THP: <span id="takeHomePay">Rp 0</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 admin-only">
+                    <button onclick="saveSalary()" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300">
+                        <i class="fas fa-save mr-2"></i>Simpan Perhitungan Gaji
+                    </button>
+                    <button onclick="calculateAllEmployees()" class="btn-primary text-white font-bold py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        <i class="fas fa-users mr-2"></i>Hitung Semua Karyawan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+            <!-- Payslip Generation Tab -->
+            <div id="payslipContent" class="tab-content hidden animate-fade-in">
+                <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-file-invoice text-purple-600 mr-3"></i>
+                    Generate Slip Gaji
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-user-check text-blue-500 mr-2"></i>
+                            Pilih Karyawan
+                        </label>
+                        <select id="payslipEmployee" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                            <option value="">Pilih karyawan...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-calendar-alt text-green-500 mr-2"></i>
+                            Bulan/Tahun
+                        </label>
+                        <select id="payslipMonth" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                            <option value="">Pilih periode...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-building text-purple-500 mr-2"></i>
+                            Filter Perusahaan
+                        </label>
+                        <select id="companyFilter" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                            <option value="">Semua Perusahaan</option>
+                            <option value="PT SUKSES BATINDO RESOURCES">PT SUKSES BATINDO RESOURCES</option>
+                            <option value="PT PANDAWA JAYA BERSATU">PT PANDAWA JAYA BERSATU</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Payslip Preview -->
+                <div id="payslipPreview" class="bg-gray-50 rounded-2xl p-6 mb-6 hidden border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Preview Slip Gaji</h3>
+                    <div id="previewContent" class="bg-white p-6 rounded-xl border shadow-sm"></div>
+                </div>
+                
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="generatePayslip()" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                        <i class="fas fa-eye mr-2"></i>Preview Slip Gaji
+                    </button>
+                    
+                    <button onclick="downloadPDF()" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">
+                        <i class="fas fa-download mr-2"></i>Download PDF
+                    </button>
+                    
+                    <button onclick="sendEmail()" class="btn-primary text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        <i class="fas fa-envelope mr-2"></i>Kirim Email
+                    </button>
+                    
+                    <button onclick="generateBulkPayslips()" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300">
+                        <i class="fas fa-users mr-2"></i>Cetak Massal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+            <!-- History Tab -->
+            <div id="historyContent" class="tab-content hidden animate-fade-in">
+                <div class="glass-effect rounded-3xl shadow-2xl p-8 border border-white/20">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-history text-indigo-600 mr-3"></i>
+                    Riwayat Penggajian
+                </h2>
+                
+                <!-- Filters -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
+                            Filter Bulan
+                        </label>
+                        <input type="month" id="historyMonth" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-building text-green-500 mr-2"></i>
+                            Filter Perusahaan
+                        </label>
+                        <select id="historyCompany" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                            <option value="">Semua Perusahaan</option>
+                            <option value="PT SUKSES BATINDO RESOURCES">PT SUKSES BATINDO RESOURCES</option>
+                            <option value="PT PANDAWA JAYA BERSATU">PT PANDAWA JAYA BERSATU</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-university text-purple-500 mr-2"></i>
+                            Filter Bank
+                        </label>
+                        <select id="historyBank" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium">
+                            <option value="">Semua Bank</option>
+                            <option value="Mandiri">Bank Mandiri</option>
+                            <option value="BCA">Bank BCA</option>
+                            <option value="BRI">Bank BRI</option>
+                            <option value="BNI">Bank BNI</option>
+                            <option value="CIMB">Bank CIMB</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button onclick="filterHistory()" class="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                            <i class="fas fa-filter mr-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- History Table -->
+                <div class="overflow-x-auto glass-effect rounded-2xl shadow-xl border border-white/20">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                    <i class="fas fa-user mr-2"></i>Nama
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                    <i class="fas fa-calendar-alt mr-2"></i>Periode
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                    <i class="fas fa-building mr-2"></i>Perusahaan
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                    <i class="fas fa-money-bill-wave mr-2"></i>Gaji Bruto
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                    <i class="fas fa-hand-holding-usd mr-2"></i>Take Home Pay
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                    <i class="fas fa-cogs mr-2"></i>Aksi
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyList" class="bg-white/90 backdrop-blur-sm divide-y divide-gray-200">
+                            <!-- History rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <script>
+        // Global variables
+        let employees = JSON.parse(localStorage.getItem('employees') || '[]');
+        let salaries = JSON.parse(localStorage.getItem('salaries') || '[]');
+        let debts = JSON.parse(localStorage.getItem('debts') || '[]');
+        let currentPayslipData = null;
+        let currentUser = null;
+
+        // Authentication credentials
+        const credentials = {
+            admin: 'adminsbrbdj@123',
+            director: 'usersbrbdj@123'
+        };
+
+        // PTKP values for 2024
+        const ptkpValues = {
+            'TK/0': 54000000,
+            'K/0': 58500000,
+            'K/1': 63000000,
+            'K/2': 67500000,
+            'K/3': 72000000
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Always start with login screen
+            showLoginScreen();
+
+            // Login form handler
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleLogin();
+            });
+
+            updateCurrentDate();
+        });
+
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Update user info
+            document.getElementById('currentUserRole').textContent = 
+                currentUser.role === 'admin' ? 'Administrator' : 'Direktur';
+            
+            // Update avatar based on role
+            const avatar = document.getElementById('userAvatar');
+            if (currentUser.role === 'admin') {
+                avatar.innerHTML = '<i class="fas fa-user-shield text-white text-sm"></i>';
+                avatar.className = 'w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center';
+            } else {
+                avatar.innerHTML = '<i class="fas fa-user-tie text-white text-sm"></i>';
+                avatar.className = 'w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center';
+            }
+
+            // Apply role-based restrictions
+            applyRoleRestrictions();
+            
+            // Initialize app data
+            updateAllSelects();
+            updateDashboard();
+            updateEmployeeList();
+            updateDebtList();
+            updateHistoryList();
+            
+            // Set default month to current month
+            const now = new Date();
+            const currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('salaryMonth').value = currentMonth;
+        }
+
+        function handleLogin() {
+            const role = document.getElementById('userRole').value;
+            const password = document.getElementById('userPassword').value;
+
+            if (!role) {
+                showMessage('Mohon pilih role akses!', 'error');
+                return;
+            }
+
+            if (!password) {
+                showMessage('Mohon masukkan password!', 'error');
+                return;
+            }
+
+            if (credentials[role] === password) {
+                currentUser = { role: role, loginTime: new Date().toISOString() };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                showMessage(`Selamat datang, ${role === 'admin' ? 'Administrator' : 'Direktur'}!`, 'success');
+                
+                setTimeout(() => {
+                    showMainApp();
+                }, 1000);
+            } else {
+                showMessage('Password salah! Silakan coba lagi.', 'error');
+                
+                // Clear password field
+                document.getElementById('userPassword').value = '';
+            }
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                
+                // Clear form
+                document.getElementById('userRole').value = '';
+                document.getElementById('userPassword').value = '';
+                
+                showMessage('Anda telah berhasil logout!', 'success');
+                
+                setTimeout(() => {
+                    showLoginScreen();
+                }, 1000);
+            }
+        }
+
+        function togglePassword() {
+            const passwordField = document.getElementById('userPassword');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                passwordIcon.className = 'fas fa-eye';
+            }
+        }
+
+        function applyRoleRestrictions() {
+            const adminOnlyElements = document.querySelectorAll('.admin-only');
+            
+            if (currentUser.role === 'director') {
+                // Hide admin-only elements for directors
+                adminOnlyElements.forEach(element => {
+                    element.style.display = 'none';
+                });
+
+                // Disable form inputs for directors
+                const formInputs = document.querySelectorAll('input, select, textarea');
+                formInputs.forEach(input => {
+                    if (!input.closest('#loginForm')) {
+                        input.disabled = true;
+                        input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                    }
+                });
+
+                // Add read-only notice
+                addReadOnlyNotice();
+            } else {
+                // Show all elements for admin
+                adminOnlyElements.forEach(element => {
+                    element.style.display = '';
+                });
+
+                // Enable all inputs for admin
+                const formInputs = document.querySelectorAll('input, select, textarea');
+                formInputs.forEach(input => {
+                    if (!input.closest('#loginForm')) {
+                        input.disabled = false;
+                        input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                    }
+                });
+            }
+        }
+
+        function addReadOnlyNotice() {
+            // Add read-only notice to each tab content
+            const tabContents = document.querySelectorAll('.tab-content:not(#dashboardContent)');
+            
+            tabContents.forEach(content => {
+                if (!content.querySelector('.readonly-notice')) {
+                    const notice = document.createElement('div');
+                    notice.className = 'readonly-notice bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6';
+                    notice.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-eye text-yellow-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold text-yellow-800">Mode View Only</h4>
+                                <p class="text-yellow-700 text-sm">Anda login sebagai Direktur dengan akses read-only. Tidak dapat melakukan perubahan data.</p>
+                            </div>
+                        </div>
+                    `;
+                    content.insertBefore(notice, content.firstChild);
+                }
+            });
+        }
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                timeZone: 'Asia/Jakarta'
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'bg-blue-50');
+                btn.classList.add('text-gray-500');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            
+            // Add active class to selected tab button
+            const activeTab = document.getElementById(tabName + 'Tab');
+            activeTab.classList.remove('text-gray-500');
+            activeTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'bg-blue-50');
+
+            // Update dashboard when switching to dashboard tab
+            if (tabName === 'dashboard') {
+                updateDashboard();
+            }
+        }
+
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('totalEmployees').textContent = employees.length;
+            document.getElementById('dashTotalEmployees').textContent = employees.length;
+            
+            // Calculate current month salary total
+            const currentMonth = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+            const currentMonthSalaries = salaries.filter(s => s.month === currentMonth);
+            const totalSalary = currentMonthSalaries.reduce((sum, s) => sum + (s.calculations?.takeHomePay || 0), 0);
+            document.getElementById('dashTotalSalary').textContent = formatCurrency(totalSalary);
+            
+            // Calculate total active debts
+            const activeDebts = debts.filter(d => d.status === 'aktif');
+            const totalDebt = activeDebts.reduce((sum, d) => sum + d.amount, 0);
+            document.getElementById('dashTotalDebt').textContent = formatCurrency(totalDebt);
+            
+            // Count total payslips generated
+            document.getElementById('dashTotalSlips').textContent = salaries.length;
+            
+            // Update charts
+            updateCharts();
+        }
+
+        function updateCharts() {
+            // Company distribution chart
+            const companyData = employees.reduce((acc, emp) => {
+                const company = emp.company.includes('BATINDO') ? 'Batindo' : 'Pandawa';
+                acc[company] = (acc[company] || 0) + 1;
+                return acc;
+            }, {});
+
+            const companyCtx = document.getElementById('companyChart').getContext('2d');
+            new Chart(companyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(companyData),
+                    datasets: [{
+                        data: Object.values(companyData),
+                        backgroundColor: ['#1e40af', '#059669'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Salary trend chart (last 6 months)
+            const salaryCtx = document.getElementById('salaryChart').getContext('2d');
+            const last6Months = [];
+            const salaryTrend = [];
+            
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                const monthKey = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+                last6Months.push(date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }));
+                
+                const monthSalaries = salaries.filter(s => s.month === monthKey);
+                const monthTotal = monthSalaries.reduce((sum, s) => sum + (s.calculations?.takeHomePay || 0), 0);
+                salaryTrend.push(monthTotal / 1000000); // Convert to millions
+            }
+
+            new Chart(salaryCtx, {
+                type: 'line',
+                data: {
+                    labels: last6Months,
+                    datasets: [{
+                        label: 'Total Gaji (Juta Rp)',
+                        data: salaryTrend,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function saveEmployee() {
+            if (currentUser.role !== 'admin') {
+                showMessage('Akses ditolak! Hanya Administrator yang dapat menambah data karyawan.', 'error');
+                return;
+            }
+
+            const employee = {
+                id: Date.now(),
+                fullName: document.getElementById('fullName').value.trim(),
+                position: document.getElementById('position').value.trim(),
+                nik: document.getElementById('nik').value.trim(),
+                npwp: document.getElementById('npwp').value.trim(),
+                ptkpStatus: document.getElementById('ptkpStatus').value,
+                bankName: document.getElementById('bankName').value,
+                accountNumber: document.getElementById('accountNumber').value.trim(),
+                company: document.getElementById('company').value,
+                email: document.getElementById('email').value.trim()
+            };
+
+            if (!employee.fullName || !employee.position || !employee.nik || !employee.accountNumber) {
+                showMessage('Mohon lengkapi data yang wajib diisi!', 'error');
+                return;
+            }
+
+            // Check for duplicate NIK
+            if (employees.some(emp => emp.nik === employee.nik)) {
+                showMessage('NIK sudah terdaftar!', 'error');
+                return;
+            }
+
+            employees.push(employee);
+            localStorage.setItem('employees', JSON.stringify(employees));
+            
+            showMessage('Data karyawan berhasil disimpan!', 'success');
+            clearEmployeeForm();
+            updateAllSelects();
+            updateEmployeeList();
+            updateDashboard();
+        }
+
+        function clearEmployeeForm() {
+            document.getElementById('employeeForm').reset();
+        }
+
+        function updateAllSelects() {
+            const selects = ['salaryEmployee', 'payslipEmployee', 'debtEmployee'];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">Pilih karyawan...</option>';
+                
+                employees.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = `${emp.fullName} - ${emp.position} (${emp.company.includes('BATINDO') ? 'Batindo' : 'Pandawa'})`;
+                    select.appendChild(option);
+                });
+            });
+
+            updatePayslipSelects();
+        }
+
+        function updateEmployeeList() {
+            const tbody = document.getElementById('employeeList');
+            tbody.innerHTML = '';
+
+            employees.forEach(emp => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">${emp.fullName.charAt(0)}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${emp.fullName}</div>
+                                <div class="text-sm text-gray-500">NIK: ${emp.nik}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${emp.position}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${emp.company.includes('BATINDO') ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
+                            ${emp.company.includes('BATINDO') ? 'Batindo' : 'Pandawa'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${emp.bankName} - ${emp.accountNumber}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        ${currentUser.role === 'admin' ? `
+                        <button onclick="editEmployee(${emp.id})" class="text-indigo-600 hover:text-indigo-900 mr-3" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteEmployee(${emp.id})" class="text-red-600 hover:text-red-900" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : `
+                        <span class="text-gray-400 text-sm">View Only</span>
+                        `}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function deleteEmployee(id) {
+            if (currentUser.role !== 'admin') {
+                showMessage('Akses ditolak! Hanya Administrator yang dapat menghapus data.', 'error');
+                return;
+            }
+
+            if (confirm('Apakah Anda yakin ingin menghapus karyawan ini?')) {
+                employees = employees.filter(emp => emp.id !== id);
+                localStorage.setItem('employees', JSON.stringify(employees));
+                
+                // Also delete related salaries and debts
+                salaries = salaries.filter(sal => sal.employeeId !== id);
+                debts = debts.filter(debt => debt.employeeId !== id);
+                localStorage.setItem('salaries', JSON.stringify(salaries));
+                localStorage.setItem('debts', JSON.stringify(debts));
+                
+                showMessage('Karyawan berhasil dihapus!', 'success');
+                updateAllSelects();
+                updateEmployeeList();
+                updateDebtList();
+                updateDashboard();
+            }
+        }
+
+        function saveDebt() {
+            if (currentUser.role !== 'admin') {
+                showMessage('Akses ditolak! Hanya Administrator yang dapat mengelola hutang.', 'error');
+                return;
+            }
+
+            const employeeId = parseInt(document.getElementById('debtEmployee').value);
+            const debtName = document.getElementById('debtName').value.trim();
+            const debtAmount = parseFloat(document.getElementById('debtAmount').value) || 0;
+            const debtStatus = document.getElementById('debtStatus').value;
+
+            if (!employeeId || !debtName || debtAmount <= 0) {
+                showMessage('Mohon lengkapi semua data hutang!', 'error');
+                return;
+            }
+
+            const debt = {
+                id: Date.now(),
+                employeeId: employeeId,
+                name: debtName,
+                amount: debtAmount,
+                status: debtStatus,
+                createdAt: new Date().toISOString()
+            };
+
+            debts.push(debt);
+            localStorage.setItem('debts', JSON.stringify(debts));
+            
+            showMessage('Data hutang berhasil disimpan!', 'success');
+            
+            // Clear form
+            document.getElementById('debtName').value = '';
+            document.getElementById('debtAmount').value = '';
+            
+            updateDebtList();
+            updateDashboard();
+        }
+
+        function updateDebtList() {
+            const tbody = document.getElementById('debtList');
+            tbody.innerHTML = '';
+
+            debts.forEach(debt => {
+                const employee = employees.find(emp => emp.id === debt.employeeId);
+                if (!employee) return;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${employee.fullName}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${debt.name}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(debt.amount)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${debt.status === 'aktif' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                            ${debt.status === 'aktif' ? 'Aktif' : 'Lunas'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        ${currentUser.role === 'admin' ? `
+                        <button onclick="toggleDebtStatus(${debt.id})" class="text-indigo-600 hover:text-indigo-900 mr-3" title="Toggle Status">
+                            <i class="fas fa-toggle-${debt.status === 'aktif' ? 'on' : 'off'}"></i>
+                        </button>
+                        <button onclick="deleteDebt(${debt.id})" class="text-red-600 hover:text-red-900" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : `
+                        <span class="text-gray-400 text-sm">View Only</span>
+                        `}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function toggleDebtStatus(id) {
+            if (currentUser.role !== 'admin') {
+                showMessage('Akses ditolak! Hanya Administrator yang dapat mengubah status hutang.', 'error');
+                return;
+            }
+
+            const debt = debts.find(d => d.id === id);
+            if (debt) {
+                debt.status = debt.status === 'aktif' ? 'lunas' : 'aktif';
+                localStorage.setItem('debts', JSON.stringify(debts));
+                updateDebtList();
+                updateDashboard();
+                showMessage(`Status hutang berhasil diubah menjadi ${debt.status}!`, 'success');
+            }
+        }
+
+        function deleteDebt(id) {
+            if (currentUser.role !== 'admin') {
+                showMessage('Akses ditolak! Hanya Administrator yang dapat menghapus hutang.', 'error');
+                return;
+            }
+
+            if (confirm('Apakah Anda yakin ingin menghapus hutang ini?')) {
+                debts = debts.filter(debt => debt.id !== id);
+                localStorage.setItem('debts', JSON.stringify(debts));
+                updateDebtList();
+                updateDashboard();
+                showMessage('Hutang berhasil dihapus!', 'success');
+            }
+        }
+
+        function loadEmployeeDebts() {
+            const employeeId = parseInt(document.getElementById('salaryEmployee').value);
+            const section = document.getElementById('employeeDebtsSection');
+            const list = document.getElementById('employeeDebtsList');
+            
+            if (!employeeId) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            const employeeDebts = debts.filter(d => d.employeeId === employeeId && d.status === 'aktif');
+            
+            if (employeeDebts.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            list.innerHTML = '';
+
+            employeeDebts.forEach(debt => {
+                const debtItem = document.createElement('div');
+                debtItem.className = 'flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0';
+                debtItem.innerHTML = `
+                    <span class="text-sm text-gray-700">${debt.name}</span>
+                    <span class="text-sm font-semibold text-red-600">${formatCurrency(debt.amount)}</span>
+                `;
+                list.appendChild(debtItem);
+            });
+
+            calculateSalary();
+        }
+
+        function calculateSalary() {
+            const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
+            const allowance = parseFloat(document.getElementById('allowance').value) || 0;
+            const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+            const salaryMonth = document.getElementById('salaryMonth').value;
+
+            // Check if it's July 2025
+            const isJuly2025 = salaryMonth === '2025-07';
+            const julyNotice = document.getElementById('julyNotice');
+            
+            if (isJuly2025) {
+                julyNotice.classList.remove('hidden');
+            } else {
+                julyNotice.classList.add('hidden');
+            }
+
+            // Calculate BPJS (skip if July 2025)
+            let jht = 0, health = 0, totalBpjs = 0;
+            if (!isJuly2025) {
+                jht = basicSalary * 0.02;
+                health = basicSalary * 0.01;
+                totalBpjs = jht + health;
+            }
+
+            // Calculate gross salary
+            const grossSalary = basicSalary + allowance + bonus;
+
+            // Calculate net income for PPh21
+            const monthlyNet = grossSalary - totalBpjs;
+            const yearlyNet = monthlyNet * 12;
+
+            // Get employee PTKP and NPWP status
+            const employeeId = document.getElementById('salaryEmployee').value;
+            let ptkp = 54000000; // Default TK/0
+            let hasNpwp = false;
+
+            if (employeeId) {
+                const employee = employees.find(emp => emp.id == employeeId);
+                if (employee) {
+                    ptkp = ptkpValues[employee.ptkpStatus] || 54000000;
+                    hasNpwp = employee.npwp && employee.npwp.trim() !== '';
+                }
+            }
+
+            // Calculate PKP (Penghasilan Kena Pajak)
+            const pkp = Math.max(0, yearlyNet - ptkp);
+
+            // Calculate PPh21
+            let pph21Annual = 0;
+            if (pkp > 0) {
+                if (pkp <= 60000000) {
+                    pph21Annual = pkp * 0.05;
+                } else if (pkp <= 250000000) {
+                    pph21Annual = (60000000 * 0.05) + ((pkp - 60000000) * 0.15);
+                } else if (pkp <= 500000000) {
+                    pph21Annual = (60000000 * 0.05) + (190000000 * 0.15) + ((pkp - 250000000) * 0.25);
+                } else {
+                    pph21Annual = (60000000 * 0.05) + (190000000 * 0.15) + (250000000 * 0.25) + ((pkp - 500000000) * 0.30);
+                }
+
+                // Add 20% penalty if no NPWP
+                if (!hasNpwp) {
+                    pph21Annual *= 1.2;
+                }
+            }
+
+            const pph21Monthly = pph21Annual / 12;
+
+            // Calculate employee debts
+            let totalDebtAmount = 0;
+            const debtBreakdown = document.getElementById('debtBreakdown');
+            
+            if (employeeId) {
+                const employeeDebts = debts.filter(d => d.employeeId == employeeId && d.status === 'aktif');
+                totalDebtAmount = employeeDebts.reduce((sum, debt) => sum + debt.amount, 0);
+                
+                if (employeeDebts.length > 0) {
+                    debtBreakdown.innerHTML = employeeDebts.map(debt => 
+                        `<p class="mb-1">${debt.name}: ${formatCurrency(debt.amount)}</p>`
+                    ).join('');
+                } else {
+                    debtBreakdown.innerHTML = '<p>Tidak ada hutang aktif</p>';
+                }
+            } else {
+                debtBreakdown.innerHTML = '<p>Tidak ada hutang aktif</p>';
+            }
+
+            // Calculate total deductions and take home pay
+            const totalDeduction = totalBpjs + pph21Monthly + totalDebtAmount;
+            const takeHomePay = grossSalary - totalDeduction;
+
+            // Update display
+            document.getElementById('jhtAmount').textContent = formatCurrency(jht);
+            document.getElementById('healthAmount').textContent = formatCurrency(health);
+            document.getElementById('totalBpjs').textContent = formatCurrency(totalBpjs);
+            document.getElementById('yearlyNet').textContent = formatCurrency(yearlyNet);
+            document.getElementById('pkp').textContent = formatCurrency(pkp);
+            document.getElementById('pph21').textContent = formatCurrency(pph21Monthly);
+            document.getElementById('totalDebt').textContent = formatCurrency(totalDebtAmount);
+            document.getElementById('grossSalary').textContent = formatCurrency(grossSalary);
+            document.getElementById('totalDeduction').textContent = formatCurrency(totalDeduction);
+            document.getElementById('takeHomePay').textContent = formatCurrency(takeHomePay);
+        }
+
+        function saveSalary() {
+            if (currentUser.role !== 'admin') {
+                showMessage('Akses ditolak! Hanya Administrator yang dapat menyimpan data gaji.', 'error');
+                return;
+            }
+
+            const employeeId = document.getElementById('salaryEmployee').value;
+            const month = document.getElementById('salaryMonth').value;
+            
+            if (!employeeId || !month) {
+                showMessage('Mohon pilih karyawan dan bulan!', 'error');
+                return;
+            }
+
+            const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
+            const allowance = parseFloat(document.getElementById('allowance').value) || 0;
+            const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+
+            if (basicSalary === 0) {
+                showMessage('Gaji pokok harus diisi!', 'error');
+                return;
+            }
+
+            const isJuly2025 = month === '2025-07';
+            const jht = isJuly2025 ? 0 : basicSalary * 0.02;
+            const health = isJuly2025 ? 0 : basicSalary * 0.01;
+            const totalBpjs = jht + health;
+
+            const salary = {
+                id: Date.now(),
+                employeeId: parseInt(employeeId),
+                month: month,
+                basicSalary: basicSalary,
+                allowance: allowance,
+                bonus: bonus,
+                isJuly2025: isJuly2025,
+                calculations: {
+                    jht: jht,
+                    health: health,
+                    totalBpjs: totalBpjs,
+                    grossSalary: basicSalary + allowance + bonus,
+                    pph21: parseFloat(document.getElementById('pph21').textContent.replace(/[^\d]/g, '')) || 0,
+                    totalDebt: parseFloat(document.getElementById('totalDebt').textContent.replace(/[^\d]/g, '')) || 0,
+                    totalDeduction: parseFloat(document.getElementById('totalDeduction').textContent.replace(/[^\d]/g, '')) || 0,
+                    takeHomePay: parseFloat(document.getElementById('takeHomePay').textContent.replace(/[^\d]/g, '')) || 0
+                },
+                createdAt: new Date().toISOString()
+            };
+
+            // Check if salary for this employee and month already exists
+            const existingIndex = salaries.findIndex(s => s.employeeId === salary.employeeId && s.month === salary.month);
+            
+            if (existingIndex >= 0) {
+                salaries[existingIndex] = salary;
+                showMessage('Data gaji berhasil diperbarui!', 'success');
+            } else {
+                salaries.push(salary);
+                showMessage('Data gaji berhasil disimpan!', 'success');
+            }
+
+            localStorage.setItem('salaries', JSON.stringify(salaries));
+            updatePayslipSelects();
+            updateHistoryList();
+            updateDashboard();
+        }
+
+        function calculateAllEmployees() {
+            const month = document.getElementById('salaryMonth').value;
+            if (!month) {
+                showMessage('Mohon pilih bulan terlebih dahulu!', 'error');
+                return;
+            }
+
+            if (!confirm('Apakah Anda yakin ingin menghitung gaji untuk semua karyawan? Ini akan menimpa data yang sudah ada.')) {
+                return;
+            }
+
+            let processed = 0;
+            employees.forEach(employee => {
+                // Set default values - you might want to customize this
+                const basicSalary = 5000000; // Default basic salary
+                const allowance = 1000000; // Default allowance
+                const bonus = 0;
+
+                const isJuly2025 = month === '2025-07';
+                const jht = isJuly2025 ? 0 : basicSalary * 0.02;
+                const health = isJuly2025 ? 0 : basicSalary * 0.01;
+                const totalBpjs = jht + health;
+
+                // Calculate employee debts
+                const employeeDebts = debts.filter(d => d.employeeId === employee.id && d.status === 'aktif');
+                const totalDebt = employeeDebts.reduce((sum, debt) => sum + debt.amount, 0);
+
+                // Calculate PPh21 (simplified)
+                const grossSalary = basicSalary + allowance + bonus;
+                const monthlyNet = grossSalary - totalBpjs;
+                const yearlyNet = monthlyNet * 12;
+                const ptkp = ptkpValues[employee.ptkpStatus] || 54000000;
+                const pkp = Math.max(0, yearlyNet - ptkp);
+                
+                let pph21Annual = 0;
+                if (pkp > 0) {
+                    if (pkp <= 60000000) {
+                        pph21Annual = pkp * 0.05;
+                    } else if (pkp <= 250000000) {
+                        pph21Annual = (60000000 * 0.05) + ((pkp - 60000000) * 0.15);
+                    } else {
+                        pph21Annual = (60000000 * 0.05) + (190000000 * 0.15) + ((pkp - 250000000) * 0.25);
+                    }
+
+                    if (!employee.npwp || employee.npwp.trim() === '') {
+                        pph21Annual *= 1.2;
+                    }
+                }
+
+                const pph21Monthly = pph21Annual / 12;
+                const totalDeduction = totalBpjs + pph21Monthly + totalDebt;
+                const takeHomePay = grossSalary - totalDeduction;
+
+                const salary = {
+                    id: Date.now() + processed,
+                    employeeId: employee.id,
+                    month: month,
+                    basicSalary: basicSalary,
+                    allowance: allowance,
+                    bonus: bonus,
+                    isJuly2025: isJuly2025,
+                    calculations: {
+                        jht: jht,
+                        health: health,
+                        totalBpjs: totalBpjs,
+                        grossSalary: grossSalary,
+                        pph21: pph21Monthly,
+                        totalDebt: totalDebt,
+                        totalDeduction: totalDeduction,
+                        takeHomePay: takeHomePay
+                    },
+                    createdAt: new Date().toISOString()
+                };
+
+                // Remove existing salary for this employee and month
+                salaries = salaries.filter(s => !(s.employeeId === employee.id && s.month === month));
+                salaries.push(salary);
+                processed++;
+            });
+
+            localStorage.setItem('salaries', JSON.stringify(salaries));
+            showMessage(`Berhasil menghitung gaji untuk ${processed} karyawan!`, 'success');
+            updatePayslipSelects();
+            updateHistoryList();
+            updateDashboard();
+        }
+
+        function updatePayslipSelects() {
+            const employeeSelect = document.getElementById('payslipEmployee');
+            const monthSelect = document.getElementById('payslipMonth');
+            
+            // Update employee select for payslip
+            employeeSelect.innerHTML = '<option value="">Pilih karyawan...</option>';
+            employees.forEach(emp => {
+                const option = document.createElement('option');
+                option.value = emp.id;
+                option.textContent = `${emp.fullName} - ${emp.position}`;
+                employeeSelect.appendChild(option);
+            });
+
+            // Update month select based on available salary data
+            employeeSelect.addEventListener('change', function() {
+                const selectedEmployeeId = parseInt(this.value);
+                monthSelect.innerHTML = '<option value="">Pilih periode...</option>';
+                
+                if (selectedEmployeeId) {
+                    const employeeSalaries = salaries.filter(s => s.employeeId === selectedEmployeeId);
+                    employeeSalaries.forEach(salary => {
+                        const option = document.createElement('option');
+                        option.value = salary.month;
+                        const date = new Date(salary.month + '-01');
+                        option.textContent = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+                        monthSelect.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        function generatePayslip() {
+            const employeeId = parseInt(document.getElementById('payslipEmployee').value);
+            const month = document.getElementById('payslipMonth').value;
+            
+            if (!employeeId || !month) {
+                showMessage('Mohon pilih karyawan dan periode!', 'error');
+                return;
+            }
+
+            const employee = employees.find(emp => emp.id === employeeId);
+            const salary = salaries.find(s => s.employeeId === employeeId && s.month === month);
+            
+            if (!employee || !salary) {
+                showMessage('Data tidak ditemukan!', 'error');
+                return;
+            }
+
+            currentPayslipData = { employee, salary };
+            
+            const monthName = new Date(month + '-01').toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+            const companyColor = employee.company.includes('BATINDO') ? 'blue' : 'green';
+            
+            // Get employee debts for this period
+            const employeeDebts = debts.filter(d => d.employeeId === employeeId && d.status === 'aktif');
+            
+            const payslipHTML = `
+                <div class="max-w-4xl mx-auto bg-white border-2 border-gray-300 p-8" style="font-family: Arial, sans-serif;">
+                    <!-- Header -->
+                    <div class="text-center mb-8 border-b-2 border-${companyColor}-300 pb-6">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-16 h-16 bg-gradient-to-r from-${companyColor}-500 to-${companyColor}-600 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-building text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-800">${employee.company}</h1>
+                                <p class="text-gray-600">Jl. Sudirman No. 123, Jakarta Pusat</p>
+                            </div>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-700 mt-4">SLIP GAJI KARYAWAN</h2>
+                        <p class="text-gray-600 mt-2">Periode: ${monthName}</p>
+                        ${salary.isJuly2025 ? '<p class="text-yellow-600 font-semibold mt-2">* Khusus Juli 2025: Tanpa Potongan BPJS</p>' : ''}
+                    </div>
+                    
+                    <!-- Employee Info -->
+                    <div class="grid grid-cols-2 gap-8 mb-8">
+                        <div class="space-y-2">
+                            <p><strong>Nama:</strong> ${employee.fullName}</p>
+                            <p><strong>Jabatan:</strong> ${employee.position}</p>
+                            <p><strong>NIK:</strong> ${employee.nik}</p>
+                            <p><strong>Status PTKP:</strong> ${employee.ptkpStatus}</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p><strong>Bank:</strong> ${employee.bankName}</p>
+                            <p><strong>No. Rekening:</strong> ${employee.accountNumber}</p>
+                            <p><strong>NPWP:</strong> ${employee.npwp || 'Tidak Ada'}</p>
+                            <p><strong>Email:</strong> ${employee.email || '-'}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Salary Details -->
+                    <table class="w-full border-collapse border border-gray-300 mb-8">
+                        <thead>
+                            <tr class="bg-${companyColor}-50">
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Keterangan</th>
+                                <th class="border border-gray-300 px-4 py-3 text-right font-semibold">Jumlah (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-green-50">
+                                <td colspan="2" class="border border-gray-300 px-4 py-2 font-semibold text-green-800">PENGHASILAN</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">Gaji Pokok</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">${formatCurrency(salary.basicSalary)}</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">Tunjangan Tetap</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">${formatCurrency(salary.allowance)}</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">Bonus/Lembur</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">${formatCurrency(salary.bonus)}</td>
+                            </tr>
+                            <tr class="bg-green-100">
+                                <td class="border border-gray-300 px-4 py-2 font-semibold">Total Penghasilan Bruto</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right font-semibold">${formatCurrency(salary.calculations.grossSalary)}</td>
+                            </tr>
+                            
+                            <tr class="bg-red-50">
+                                <td colspan="2" class="border border-gray-300 px-4 py-2 font-semibold text-red-800">POTONGAN</td>
+                            </tr>
+                            ${!salary.isJuly2025 ? `
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">BPJS JHT (2%)</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">(${formatCurrency(salary.calculations.jht)})</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">BPJS Kesehatan (1%)</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">(${formatCurrency(salary.calculations.health)})</td>
+                            </tr>
+                            ` : `
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">BPJS (Khusus Juli 2025)</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">Rp 0</td>
+                            </tr>
+                            `}
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">PPh 21</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">(${formatCurrency(salary.calculations.pph21)})</td>
+                            </tr>
+                            ${employeeDebts.length > 0 ? employeeDebts.map(debt => `
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">Hutang: ${debt.name}</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">(${formatCurrency(debt.amount)})</td>
+                            </tr>
+                            `).join('') : ''}
+                            <tr class="bg-red-100">
+                                <td class="border border-gray-300 px-4 py-2 font-semibold">Total Potongan</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right font-semibold">(${formatCurrency(salary.calculations.totalDeduction)})</td>
+                            </tr>
+                            
+                            <tr class="bg-${companyColor}-100">
+                                <td class="border border-gray-300 px-4 py-3 font-bold text-${companyColor}-800 text-lg">TAKE HOME PAY</td>
+                                <td class="border border-gray-300 px-4 py-3 text-right font-bold text-${companyColor}-800 text-lg">${formatCurrency(salary.calculations.takeHomePay)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Footer -->
+                    <div class="flex justify-between items-end mt-12">
+                        <div class="text-center">
+                            <div id="qrcode-${Date.now()}" class="mb-4"></div>
+                            <p class="text-xs text-gray-600">QR Code Verifikasi</p>
+                            <p class="text-xs text-gray-500 mt-1">ID: ${salary.id}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="mb-12">Jakarta, ${new Date().toLocaleDateString('id-ID')}</p>
+                            <div class="border-t-2 border-gray-400 pt-2">
+                                <p class="font-semibold">HRD Department</p>
+                                <p class="text-sm text-gray-600">${employee.company}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Digital Signature -->
+                    <div class="mt-8 text-center text-xs text-gray-500">
+                        <p>Dokumen ini dibuat secara digital dan sah tanpa tanda tangan basah</p>
+                        <p>Generated on: ${new Date().toLocaleString('id-ID')}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('previewContent').innerHTML = payslipHTML;
+            document.getElementById('payslipPreview').classList.remove('hidden');
+            
+            // Generate QR Code
+            const qrData = JSON.stringify({
+                company: employee.company,
+                employee: employee.fullName,
+                period: monthName,
+                amount: salary.calculations.takeHomePay,
+                id: salary.id
+            });
+            
+            const qrElement = document.querySelector('[id^="qrcode-"]');
+            if (qrElement) {
+                QRCode.toCanvas(qrElement, qrData, { width: 100, height: 100 }, function (error) {
+                    if (error) console.error(error);
+                });
+            }
+            
+            showMessage('Preview slip gaji berhasil dibuat!', 'success');
+        }
+
+        function downloadPDF() {
+            if (!currentPayslipData) {
+                showMessage('Mohon generate preview terlebih dahulu!', 'error');
+                return;
+            }
+
+            const { jsPDF } = window.jsPDF;
+            const doc = new jsPDF();
+            
+            const { employee, salary } = currentPayslipData;
+            const monthName = new Date(salary.month + '-01').toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+            
+            // Header
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text(employee.company, 105, 20, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('SLIP GAJI KARYAWAN', 105, 30, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Periode: ${monthName}`, 105, 40, { align: 'center' });
+            
+            if (salary.isJuly2025) {
+                doc.setFontSize(10);
+                doc.setTextColor(255, 165, 0);
+                doc.text('* Khusus Juli 2025: Tanpa Potongan BPJS', 105, 50, { align: 'center' });
+                doc.setTextColor(0, 0, 0);
+            }
+            
+            // Employee Info
+            doc.setFontSize(10);
+            let y = salary.isJuly2025 ? 70 : 60;
+            doc.text(`Nama: ${employee.fullName}`, 20, y);
+            doc.text(`Jabatan: ${employee.position}`, 20, y + 10);
+            doc.text(`NIK: ${employee.nik}`, 20, y + 20);
+            doc.text(`Bank: ${employee.bankName}`, 120, y);
+            doc.text(`No. Rekening: ${employee.accountNumber}`, 120, y + 10);
+            doc.text(`Status PTKP: ${employee.ptkpStatus}`, 120, y + 20);
+            
+            // Table
+            y += 40;
+            doc.setFont(undefined, 'bold');
+            doc.text('PENGHASILAN', 20, y);
+            doc.line(20, y + 2, 190, y + 2);
+            
+            y += 10;
+            doc.setFont(undefined, 'normal');
+            doc.text('Gaji Pokok', 20, y);
+            doc.text(formatCurrency(salary.basicSalary), 150, y, { align: 'right' });
+            
+            y += 8;
+            doc.text('Tunjangan Tetap', 20, y);
+            doc.text(formatCurrency(salary.allowance), 150, y, { align: 'right' });
+            
+            y += 8;
+            doc.text('Bonus/Lembur', 20, y);
+            doc.text(formatCurrency(salary.bonus), 150, y, { align: 'right' });
+            
+            y += 10;
+            doc.setFont(undefined, 'bold');
+            doc.text('Total Penghasilan Bruto', 20, y);
+            doc.text(formatCurrency(salary.calculations.grossSalary), 150, y, { align: 'right' });
+            doc.line(20, y + 2, 190, y + 2);
+            
+            y += 15;
+            doc.text('POTONGAN', 20, y);
+            doc.line(20, y + 2, 190, y + 2);
+            
+            y += 10;
+            doc.setFont(undefined, 'normal');
+            if (!salary.isJuly2025) {
+                doc.text('BPJS JHT (2%)', 20, y);
+                doc.text(`(${formatCurrency(salary.calculations.jht)})`, 150, y, { align: 'right' });
+                
+                y += 8;
+                doc.text('BPJS Kesehatan (1%)', 20, y);
+                doc.text(`(${formatCurrency(salary.calculations.health)})`, 150, y, { align: 'right' });
+            } else {
+                doc.text('BPJS (Khusus Juli 2025)', 20, y);
+                doc.text('Rp 0', 150, y, { align: 'right' });
+            }
+            
+            y += 8;
+            doc.text('PPh 21', 20, y);
+            doc.text(`(${formatCurrency(salary.calculations.pph21)})`, 150, y, { align: 'right' });
+            
+            // Add debts if any
+            const employeeDebts = debts.filter(d => d.employeeId === employee.id && d.status === 'aktif');
+            employeeDebts.forEach(debt => {
+                y += 8;
+                doc.text(`Hutang: ${debt.name}`, 20, y);
+                doc.text(`(${formatCurrency(debt.amount)})`, 150, y, { align: 'right' });
+            });
+            
+            y += 10;
+            doc.setFont(undefined, 'bold');
+            doc.text('Total Potongan', 20, y);
+            doc.text(`(${formatCurrency(salary.calculations.totalDeduction)})`, 150, y, { align: 'right' });
+            doc.line(20, y + 2, 190, y + 2);
+            
+            y += 15;
+            doc.setFontSize(12);
+            doc.text('TAKE HOME PAY', 20, y);
+            doc.text(formatCurrency(salary.calculations.takeHomePay), 150, y, { align: 'right' });
+            doc.line(20, y + 2, 190, y + 2);
+            
+            // Footer
+            y += 30;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Jakarta, ${new Date().toLocaleDateString('id-ID')}`, 150, y, { align: 'right' });
+            y += 20;
+            doc.text('HRD Department', 150, y, { align: 'right' });
+            doc.text(employee.company, 150, y + 8, { align: 'right' });
+            
+            // Save PDF
+            const fileName = `Slip_Gaji_${employee.fullName.replace(/\s+/g, '_')}_${salary.month}.pdf`;
+            doc.save(fileName);
+            
+            showMessage('PDF berhasil didownload!', 'success');
+        }
+
+        function sendEmail() {
+            if (!currentPayslipData) {
+                showMessage('Mohon generate preview terlebih dahulu!', 'error');
+                return;
+            }
+            
+            const { employee } = currentPayslipData;
+            if (!employee.email) {
+                showMessage('Email karyawan tidak tersedia!', 'error');
+                return;
+            }
+            
+            // This is a demo function - in real implementation, you would integrate with email service
+            showMessage(`Demo: Slip gaji akan dikirim ke ${employee.email}`, 'info');
+        }
+
+        function generateBulkPayslips() {
+            const month = document.getElementById('payslipMonth').value;
+            const companyFilter = document.getElementById('companyFilter').value;
+            
+            if (!month) {
+                showMessage('Mohon pilih periode terlebih dahulu!', 'error');
+                return;
+            }
+            
+            let filteredSalaries = salaries.filter(s => s.month === month);
+            
+            if (companyFilter) {
+                filteredSalaries = filteredSalaries.filter(s => {
+                    const employee = employees.find(emp => emp.id === s.employeeId);
+                    return employee && employee.company === companyFilter;
+                });
+            }
+            
+            if (filteredSalaries.length === 0) {
+                showMessage('Tidak ada data gaji untuk periode dan filter yang dipilih!', 'error');
+                return;
+            }
+            
+            if (!confirm(`Akan membuat ${filteredSalaries.length} slip gaji. Lanjutkan?`)) {
+                return;
+            }
+            
+            // This would generate multiple PDFs in a real implementation
+            showMessage(`Demo: ${filteredSalaries.length} slip gaji akan dibuat secara massal`, 'info');
+        }
+
+        function updateHistoryList() {
+            const tbody = document.getElementById('historyList');
+            tbody.innerHTML = '';
+
+            salaries.forEach(salary => {
+                const employee = employees.find(emp => emp.id === salary.employeeId);
+                if (!employee) return;
+
+                const monthName = new Date(salary.month + '-01').toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">${employee.fullName.charAt(0)}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${employee.fullName}</div>
+                                <div class="text-sm text-gray-500">${employee.position}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${monthName}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${employee.company.includes('BATINDO') ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
+                            ${employee.company.includes('BATINDO') ? 'Batindo' : 'Pandawa'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(salary.calculations.grossSalary)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">${formatCurrency(salary.calculations.takeHomePay)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewPayslipFromHistory(${salary.employeeId}, '${salary.month}')" class="text-indigo-600 hover:text-indigo-900 mr-3" title="Lihat Slip">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="downloadPayslipFromHistory(${salary.employeeId}, '${salary.month}')" class="text-green-600 hover:text-green-900 mr-3" title="Download PDF">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        ${currentUser.role === 'admin' ? `
+                        <button onclick="deleteSalary(${salary.id})" class="text-red-600 hover:text-red-900" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function viewPayslipFromHistory(employeeId, month) {
+            // Set the values and generate payslip
+            document.getElementById('payslipEmployee').value = employeeId;
+            
+            // Trigger the change event to populate months
+            const event = new Event('change');
+            document.getElementById('payslipEmployee').dispatchEvent(event);
+            
+            // Wait a bit for the months to populate, then set the month
+            setTimeout(() => {
+                document.getElementById('payslipMonth').value = month;
+                showTab('payslip');
+                generatePayslip();
+            }, 100);
+        }
+
+        function downloadPayslipFromHistory(employeeId, month) {
+            const employee = employees.find(emp => emp.id === employeeId);
+            const salary = salaries.find(s => s.employeeId === employeeId && s.month === month);
+            
+            if (employee && salary) {
+                currentPayslipData = { employee, salary };
+                downloadPDF();
+            }
+        }
+
+        function deleteSalary(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data gaji ini?')) {
+                salaries = salaries.filter(salary => salary.id !== id);
+                localStorage.setItem('salaries', JSON.stringify(salaries));
+                updateHistoryList();
+                updateDashboard();
+                showMessage('Data gaji berhasil dihapus!', 'success');
+            }
+        }
+
+        function filterHistory() {
+            const month = document.getElementById('historyMonth').value;
+            const company = document.getElementById('historyCompany').value;
+            const bank = document.getElementById('historyBank').value;
+            
+            const tbody = document.getElementById('historyList');
+            tbody.innerHTML = '';
+
+            let filteredSalaries = salaries;
+            
+            if (month) {
+                filteredSalaries = filteredSalaries.filter(s => s.month === month);
+            }
+            
+            filteredSalaries.forEach(salary => {
+                const employee = employees.find(emp => emp.id === salary.employeeId);
+                if (!employee) return;
+                
+                if (company && employee.company !== company) return;
+                if (bank && employee.bankName !== bank) return;
+
+                const monthName = new Date(salary.month + '-01').toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">${employee.fullName.charAt(0)}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${employee.fullName}</div>
+                                <div class="text-sm text-gray-500">${employee.position}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${monthName}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${employee.company.includes('BATINDO') ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
+                            ${employee.company.includes('BATINDO') ? 'Batindo' : 'Pandawa'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(salary.calculations.grossSalary)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">${formatCurrency(salary.calculations.takeHomePay)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewPayslipFromHistory(${salary.employeeId}, '${salary.month}')" class="text-indigo-600 hover:text-indigo-900 mr-3" title="Lihat Slip">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="downloadPayslipFromHistory(${salary.employeeId}, '${salary.month}')" class="text-green-600 hover:text-green-900 mr-3" title="Download PDF">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        ${currentUser.role === 'admin' ? `
+                        <button onclick="deleteSalary(${salary.id})" class="text-red-600 hover:text-red-900" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            showMessage('Filter berhasil diterapkan!', 'success');
+        }
+
+        function importExcel() {
+            showMessage('Demo: Fitur import Excel akan tersedia dalam versi production', 'info');
+        }
+
+        function exportEmployees() {
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Nama,Jabatan,NIK,NPWP,PTKP,Bank,No Rekening,Perusahaan,Email\n"
+                + employees.map(emp => 
+                    `"${emp.fullName}","${emp.position}","${emp.nik}","${emp.npwp || ''}","${emp.ptkpStatus}","${emp.bankName}","${emp.accountNumber}","${emp.company}","${emp.email || ''}"`
+                ).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `data_karyawan_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('Data karyawan berhasil diekspor!', 'success');
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-green-500' : 
+                           type === 'error' ? 'bg-red-500' : 
+                           type === 'info' ? 'bg-blue-500' : 'bg-yellow-500';
+            
+            messageDiv.className = `${bgColor} text-white px-6 py-4 rounded-lg shadow-lg mb-4 transform transition-all duration-300 max-w-md`;
+            messageDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-3"></i>
+                        <span class="text-sm">${message}</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            messageContainer.appendChild(messageDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968217e8c5fdfb86',t:'MTc1NDAxNzMxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
