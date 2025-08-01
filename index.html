@@ -464,6 +464,14 @@
                     
                     <div class="relative">
                         <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                            Alamat Lengkap *
+                        </label>
+                        <textarea id="address" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" rows="3" placeholder="Jalan Rahayu No. 33D RT/RW. 009/004. Kode Pos. 70613. Kel. Sungai Paring Kec. Martapura Kab. Banjar Provinsi Kalimantan Selatan." required></textarea>
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
                             <i class="fas fa-envelope text-cyan-500 mr-2"></i>
                             Email (Opsional)
                         </label>
@@ -658,6 +666,17 @@
                             Bonus/Lembur (Rp)
                         </label>
                         <input type="number" id="bonus" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" placeholder="0" oninput="calculateSalary()">
+                    </div>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-percentage text-indigo-500 mr-2"></i>
+                            Penerapan PPh 21
+                        </label>
+                        <select id="pph21Status" class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md font-medium" onchange="calculateSalary()">
+                            <option value="yes">Berlaku PPh 21</option>
+                            <option value="no">Tidak Berlaku PPh 21</option>
+                        </select>
                     </div>
                 </div>
 
@@ -1252,10 +1271,11 @@
                 bankName: document.getElementById('bankName').value,
                 accountNumber: document.getElementById('accountNumber').value.trim(),
                 company: document.getElementById('company').value,
+                address: document.getElementById('address').value.trim(),
                 email: document.getElementById('email').value.trim()
             };
 
-            if (!employee.fullName || !employee.position || !employee.nik || !employee.accountNumber) {
+            if (!employee.fullName || !employee.position || !employee.nik || !employee.accountNumber || !employee.address) {
                 showMessage('Mohon lengkapi data yang wajib diisi!', 'error');
                 return;
             }
@@ -1508,6 +1528,7 @@
             const allowance = parseFloat(document.getElementById('allowance').value) || 0;
             const bonus = parseFloat(document.getElementById('bonus').value) || 0;
             const salaryMonth = document.getElementById('salaryMonth').value;
+            const pph21Status = document.getElementById('pph21Status').value;
 
             // Check if it's July 2025
             const isJuly2025 = salaryMonth === '2025-07';
@@ -1530,46 +1551,51 @@
             // Calculate gross salary
             const grossSalary = basicSalary + allowance + bonus;
 
-            // Calculate net income for PPh21
-            const monthlyNet = grossSalary - totalBpjs;
-            const yearlyNet = monthlyNet * 12;
+            // Calculate PPh21 based on status
+            let pph21Monthly = 0;
+            
+            if (pph21Status === 'yes') {
+                // Calculate net income for PPh21
+                const monthlyNet = grossSalary - totalBpjs;
+                const yearlyNet = monthlyNet * 12;
 
-            // Get employee PTKP and NPWP status
-            const employeeId = document.getElementById('salaryEmployee').value;
-            let ptkp = 54000000; // Default TK/0
-            let hasNpwp = false;
+                // Get employee PTKP and NPWP status
+                const employeeId = document.getElementById('salaryEmployee').value;
+                let ptkp = 54000000; // Default TK/0
+                let hasNpwp = false;
 
-            if (employeeId) {
-                const employee = employees.find(emp => emp.id == employeeId);
-                if (employee) {
-                    ptkp = ptkpValues[employee.ptkpStatus] || 54000000;
-                    hasNpwp = employee.npwp && employee.npwp.trim() !== '';
+                if (employeeId) {
+                    const employee = employees.find(emp => emp.id == employeeId);
+                    if (employee) {
+                        ptkp = ptkpValues[employee.ptkpStatus] || 54000000;
+                        hasNpwp = employee.npwp && employee.npwp.trim() !== '';
+                    }
                 }
+
+                // Calculate PKP (Penghasilan Kena Pajak)
+                const pkp = Math.max(0, yearlyNet - ptkp);
+
+                // Calculate PPh21
+                let pph21Annual = 0;
+                if (pkp > 0) {
+                    if (pkp <= 60000000) {
+                        pph21Annual = pkp * 0.05;
+                    } else if (pkp <= 250000000) {
+                        pph21Annual = (60000000 * 0.05) + ((pkp - 60000000) * 0.15);
+                    } else if (pkp <= 500000000) {
+                        pph21Annual = (60000000 * 0.05) + (190000000 * 0.15) + ((pkp - 250000000) * 0.25);
+                    } else {
+                        pph21Annual = (60000000 * 0.05) + (190000000 * 0.15) + (250000000 * 0.25) + ((pkp - 500000000) * 0.30);
+                    }
+
+                    // Add 20% penalty if no NPWP
+                    if (!hasNpwp) {
+                        pph21Annual *= 1.2;
+                    }
+                }
+
+                pph21Monthly = pph21Annual / 12;
             }
-
-            // Calculate PKP (Penghasilan Kena Pajak)
-            const pkp = Math.max(0, yearlyNet - ptkp);
-
-            // Calculate PPh21
-            let pph21Annual = 0;
-            if (pkp > 0) {
-                if (pkp <= 60000000) {
-                    pph21Annual = pkp * 0.05;
-                } else if (pkp <= 250000000) {
-                    pph21Annual = (60000000 * 0.05) + ((pkp - 60000000) * 0.15);
-                } else if (pkp <= 500000000) {
-                    pph21Annual = (60000000 * 0.05) + (190000000 * 0.15) + ((pkp - 250000000) * 0.25);
-                } else {
-                    pph21Annual = (60000000 * 0.05) + (190000000 * 0.15) + (250000000 * 0.25) + ((pkp - 500000000) * 0.30);
-                }
-
-                // Add 20% penalty if no NPWP
-                if (!hasNpwp) {
-                    pph21Annual *= 1.2;
-                }
-            }
-
-            const pph21Monthly = pph21Annual / 12;
 
             // Calculate employee debts
             let totalDebtAmount = 0;
@@ -1624,6 +1650,7 @@
             const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
             const allowance = parseFloat(document.getElementById('allowance').value) || 0;
             const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+            const pph21Status = document.getElementById('pph21Status').value;
 
             if (basicSalary === 0) {
                 showMessage('Gaji pokok harus diisi!', 'error');
@@ -1643,6 +1670,7 @@
                 allowance: allowance,
                 bonus: bonus,
                 isJuly2025: isJuly2025,
+                pph21Status: pph21Status,
                 calculations: {
                     jht: jht,
                     health: health,
@@ -1826,7 +1854,7 @@
                             </div>
                             <div>
                                 <h1 class="text-2xl font-bold text-gray-800">${employee.company}</h1>
-                                <p class="text-gray-600">Jl. Sudirman No. 123, Jakarta Pusat</p>
+                                <p class="text-gray-600">Jalan Rahayu No. 33D RT/RW. 009/004. Kode Pos. 70613<br>Kel. Sungai Paring Kec. Martapura Kab. Banjar Provinsi Kalimantan Selatan</p>
                             </div>
                         </div>
                         <h2 class="text-xl font-semibold text-gray-700 mt-4">SLIP GAJI KARYAWAN</h2>
@@ -1841,12 +1869,14 @@
                             <p><strong>Jabatan:</strong> ${employee.position}</p>
                             <p><strong>NIK:</strong> ${employee.nik}</p>
                             <p><strong>Status PTKP:</strong> ${employee.ptkpStatus}</p>
+                            <p><strong>Alamat:</strong> ${employee.address || '-'}</p>
                         </div>
                         <div class="space-y-2">
                             <p><strong>Bank:</strong> ${employee.bankName}</p>
                             <p><strong>No. Rekening:</strong> ${employee.accountNumber}</p>
                             <p><strong>NPWP:</strong> ${employee.npwp || 'Tidak Ada'}</p>
                             <p><strong>Email:</strong> ${employee.email || '-'}</p>
+                            <p><strong>PPh 21:</strong> ${salary.pph21Status === 'yes' ? 'Berlaku' : 'Tidak Berlaku'}</p>
                         </div>
                     </div>
                     
@@ -1898,8 +1928,8 @@
                             </tr>
                             `}
                             <tr>
-                                <td class="border border-gray-300 px-4 py-2">PPh 21</td>
-                                <td class="border border-gray-300 px-4 py-2 text-right">(${formatCurrency(salary.calculations.pph21)})</td>
+                                <td class="border border-gray-300 px-4 py-2">PPh 21 ${salary.pph21Status === 'yes' ? '' : '(Tidak Berlaku)'}</td>
+                                <td class="border border-gray-300 px-4 py-2 text-right">${salary.pph21Status === 'yes' ? `(${formatCurrency(salary.calculations.pph21)})` : 'Rp 0'}</td>
                             </tr>
                             ${employeeDebts.length > 0 ? employeeDebts.map(debt => `
                             <tr>
@@ -1927,7 +1957,7 @@
                             <p class="text-xs text-gray-500 mt-1">ID: ${salary.id}</p>
                         </div>
                         <div class="text-center">
-                            <p class="mb-12">Jakarta, ${new Date().toLocaleDateString('id-ID')}</p>
+                            <p class="mb-12">Martapura, ${new Date().toLocaleDateString('id-ID')}</p>
                             <div class="border-t-2 border-gray-400 pt-2">
                                 <p class="font-semibold">HRD Department</p>
                                 <p class="text-sm text-gray-600">${employee.company}</p>
@@ -2000,12 +2030,18 @@
             doc.text(`Nama: ${employee.fullName}`, 20, y);
             doc.text(`Jabatan: ${employee.position}`, 20, y + 10);
             doc.text(`NIK: ${employee.nik}`, 20, y + 20);
+            doc.text(`Status PTKP: ${employee.ptkpStatus}`, 20, y + 30);
             doc.text(`Bank: ${employee.bankName}`, 120, y);
             doc.text(`No. Rekening: ${employee.accountNumber}`, 120, y + 10);
-            doc.text(`Status PTKP: ${employee.ptkpStatus}`, 120, y + 20);
+            doc.text(`PPh 21: ${salary.pph21Status === 'yes' ? 'Berlaku' : 'Tidak Berlaku'}`, 120, y + 20);
+            
+            // Address (split into multiple lines if too long)
+            const address = employee.address || '-';
+            const addressLines = doc.splitTextToSize(`Alamat: ${address}`, 170);
+            doc.text(addressLines, 20, y + 40);
             
             // Table
-            y += 40;
+            y += 60;
             doc.setFont(undefined, 'bold');
             doc.text('PENGHASILAN', 20, y);
             doc.line(20, y + 2, 190, y + 2);
@@ -2048,8 +2084,8 @@
             }
             
             y += 8;
-            doc.text('PPh 21', 20, y);
-            doc.text(`(${formatCurrency(salary.calculations.pph21)})`, 150, y, { align: 'right' });
+            doc.text(`PPh 21 ${salary.pph21Status === 'yes' ? '' : '(Tidak Berlaku)'}`, 20, y);
+            doc.text(salary.pph21Status === 'yes' ? `(${formatCurrency(salary.calculations.pph21)})` : 'Rp 0', 150, y, { align: 'right' });
             
             // Add debts if any
             const employeeDebts = debts.filter(d => d.employeeId === employee.id && d.status === 'aktif');
@@ -2075,7 +2111,7 @@
             y += 30;
             doc.setFontSize(10);
             doc.setFont(undefined, 'normal');
-            doc.text(`Jakarta, ${new Date().toLocaleDateString('id-ID')}`, 150, y, { align: 'right' });
+            doc.text(`Martapura, ${new Date().toLocaleDateString('id-ID')}`, 150, y, { align: 'right' });
             y += 20;
             doc.text('HRD Department', 150, y, { align: 'right' });
             doc.text(employee.company, 150, y + 8, { align: 'right' });
@@ -2293,9 +2329,9 @@
 
         function exportEmployees() {
             const csvContent = "data:text/csv;charset=utf-8," 
-                + "Nama,Jabatan,NIK,NPWP,PTKP,Bank,No Rekening,Perusahaan,Email\n"
+                + "Nama,Jabatan,NIK,NPWP,PTKP,Bank,No Rekening,Perusahaan,Alamat,Email\n"
                 + employees.map(emp => 
-                    `"${emp.fullName}","${emp.position}","${emp.nik}","${emp.npwp || ''}","${emp.ptkpStatus}","${emp.bankName}","${emp.accountNumber}","${emp.company}","${emp.email || ''}"`
+                    `"${emp.fullName}","${emp.position}","${emp.nik}","${emp.npwp || ''}","${emp.ptkpStatus}","${emp.bankName}","${emp.accountNumber}","${emp.company}","${emp.address || ''}","${emp.email || ''}"`
                 ).join("\n");
 
             const encodedUri = encodeURI(csvContent);
@@ -2348,5 +2384,5 @@
             }, 5000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968217e8c5fdfb86',t:'MTc1NDAxNzMxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968241ffa4acfd2f',t:'MTc1NDAxOTAzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
